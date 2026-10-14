@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer"><title>Montegro — Powrót z banku</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; connect-src 'none'; img-src 'none'">
+<style>body{background:#1c1c20;color:#eee;font:16px system-ui;max-width:570px;margin:11vh auto;padding:24px}article{background:#242428;border:1px solid #38383b;border-radius:14px;padding:28px}h1{color:#ef9853}a{display:inline-block;padding:12px 20px;background:#dd884c;color:#161616;border-radius:8px;text-decoration:none;margin-top:12px}small{color:#bbb}</style></head>
+<body><article><h1>Montegro</h1><p id="msg">Sprawdzanie odpowiedzi banku…</p><a id="go" hidden rel="noreferrer">Wróć do Montegro</a><p><small>Używaj tej strony wyłącznie po rozpoczęciu autoryzacji z Montegro na tym samym Macu. Kod autoryzacyjny jest jednorazowy.</small></p></article>
+<script>
+(()=>{'use strict';
+const q=new URLSearchParams(location.search),state=q.get('state'),code=q.get('code'),error=q.get('error');
+const msg=document.getElementById('msg'),button=document.getElementById('go');
+if(!state||!/^[a-f0-9-]{36}$/i.test(state)||((!code||code.length>4096)&&!error)){msg.textContent='Nieprawidłowy lub niekompletny powrót z banku. Wróć do Montegro.';return}
+const target=new URL('http://127.0.0.1:43187/callback');target.searchParams.set('state',state);
+if(code)target.searchParams.set('code',code);
+if(error)target.searchParams.set('error',error.slice(0,200));
+msg.textContent='Zgoda bankowa została zakończona. Kliknij poniżej, aby przekazać wynik do Montegro na tym Macu.';
+button.href=target.href;button.hidden=false;
+try{history.replaceState(null,'',location.pathname)}catch(_){ }
+})();
+</script></body></html>
